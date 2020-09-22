@@ -1,3 +1,3 @@
-module github.com/DeanPDX/goff
+module github.com/deanpdx/goff
 
 go 1.13
