@@ -1,69 +1,88 @@
 package main
 
 import (
-	"encoding/csv"
-	"encoding/json"
-	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/DeanPDX/goff/pkg/format"
 )
 
-var inPath = flag.String("in", "", "The input path of the file you want to parse (Required)")
-var outPath = flag.String("out", "", "The output path for the file you want to write (Required)")
+// Version is a constant for keeping track of app version.
+const Version = 0.1
 
 func main() {
-	flag.Parse()
-
-	if *inPath == "" || *outPath == "" {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
-
-	f, err := os.Open(*inPath)
+	inPath, outPath := parseArgs(os.Args[1:])
+	f, err := os.Open(inPath)
 	if err != nil {
-		log.Fatal("Problem opening", *inPath, ":", err.Error())
+		log.Fatal("Problem opening", inPath, ":", err.Error())
 	}
 	defer f.Close()
 
-	r := csv.NewReader(f)
-	r.FieldsPerRecord = -1
-	r.LazyQuotes = true
+	var reader format.Readable
+	// TODO: Once we support more file types, swap CSV implementation for whatever.
+	reader = &format.CSV{}
 
-	headers, err := r.Read()
-	if err == io.EOF {
-		log.Fatal("File must contain header row and at least one data row.")
+	err = reader.Initialize(f)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	outFile, _ := os.Create(*outPath)
+	columns, err := reader.ReadHeader()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	outFile, _ := os.Create(outPath)
 	defer outFile.Close()
-	outFile.WriteString("[\n\t")
-	first := true
+	var output format.Writable
+	// TODO: Once we support more file types, swap JSON implementation for whatever.
+	output = &format.JSON{}
+	output.WriteHeader(outFile, columns)
+	index := 0
 	for {
-		record, err := r.Read()
+		row, err := reader.ReadRow(columns)
 		if err == io.EOF {
 			break
 		} else if err != nil {
 			log.Fatal(err)
 		}
 
-		if first == false {
-			outFile.WriteString(",\n\t")
-		}
-		first = false
-
-		columns := make(map[string]string, len(headers))
-
-		for i, header := range headers {
-			columns[header] = record[i]
-		}
-
-		encoded, err := json.MarshalIndent(columns, "\t", "\t")
-
-		if err != nil {
-			log.Fatal(err)
-		}
-		outFile.Write(encoded)
+		output.WriteRecord(outFile, row, index)
+		index++
 	}
-	outFile.WriteString("\n]")
+	output.WriteFooter(outFile)
+}
+
+func parseArgs(args []string) (string, string) {
+	if len(args) == 0 {
+		printHelp()
+		os.Exit(0)
+	}
+
+	in, out := args[0], ""
+
+	if len(args) > 1 {
+		out = args[1]
+	}
+
+	// If out is not supplied, default to appropriate output path.
+	if out == "" {
+		out = fmt.Sprintf("%v.json", strings.TrimSuffix(in, filepath.Ext(in)))
+	}
+	return in, out
+}
+
+func printHelp() {
+	fmt.Printf("v%v\n", Version)
+	fmt.Println(`usage:
+
+goff <input file path> <output file path>
+
+the second argument (output file path) is optional
+and will default to the name of your input file with 
+the appropriate extension.`)
 }
