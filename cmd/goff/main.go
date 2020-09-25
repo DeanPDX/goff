@@ -35,7 +35,7 @@ func main() {
 		log.Fatal("File must contain header row and at least one data row.")
 	}
 
-	outFile, _ := os.OpenFile(*outPath, os.O_CREATE, os.ModePerm)
+	outFile, _ := os.Create(*outPath)
 	defer outFile.Close()
 	outFile.WriteString("[\n\t")
 	first := true
