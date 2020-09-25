@@ -2,6 +2,10 @@
 
 This is a very quick util I started building to help convert CSV to JSON. Right now it only supports CSV > JSON with minimal error recovery.
 
+## Demo
+
+![Demonstration](./.github/images/demo.gif)
+
 ## Usage
 
 Assuming the following CSV file named `data.csv`:
