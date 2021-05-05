@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/DeanPDX/goff/pkg/format"
+	"github.com/DeanPDX/goff/format"
 )
 
 // Version is a constant for keeping track of app version.
@@ -80,7 +80,7 @@ func printHelp() {
 	fmt.Printf("v%v\n", Version)
 	fmt.Println(`usage:
 
-goff <input file path> <output file path>
+goff <input file path> <OPTIONAL: output file path>
 
 the second argument (output file path) is optional
 and will default to the name of your input file with 
