@@ -1,4 +1,4 @@
-# Golang File Formatter (GOFF)
+# Golang File Formatter (GOFF) [![GoDoc](https://godoc.org/github.com/DeanPDX/goff?status.svg)](http://godoc.org/github.com/DeanPDX/goff)
 
 This is a very quick util I started building to help convert CSV to JSON. Right now it only supports CSV > JSON with minimal error recovery.
 

@@ -1,3 +1,6 @@
+/*
+* Goff is a quick and easy CLI file formatter meant to convert between formats.
+ */
 package main
 
 import (
