@@ -15,7 +15,7 @@ import (
 )
 
 // Version is a constant for keeping track of app version.
-const Version = 0.1
+const Version = "0.1.0"
 
 func main() {
 	inPath, outPath := parseArgs(os.Args[1:])
