@@ -11,6 +11,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/DeanPDX/goff/format/json"
+
+	"github.com/DeanPDX/goff/format/csv"
+
 	"github.com/DeanPDX/goff/format"
 )
 
@@ -27,7 +31,7 @@ func main() {
 
 	var reader format.Readable
 	// TODO: Once we support more file types, swap CSV implementation for whatever.
-	reader = &format.CSV{}
+	reader = &csv.Reader{}
 
 	err = reader.Initialize(f)
 	if err != nil {
@@ -43,7 +47,7 @@ func main() {
 	defer outFile.Close()
 	var output format.Writable
 	// TODO: Once we support more file types, swap JSON implementation for whatever.
-	output = &format.JSON{}
+	output = &json.Writer{}
 	output.WriteHeader(outFile, columns)
 	index := 0
 	for {

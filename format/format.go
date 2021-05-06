@@ -1,3 +1,4 @@
+// Package format package contains interfaces to implement to allow read/write of various file types.
 package format
 
 import "os"
@@ -8,8 +9,8 @@ type Readable interface {
 	Initialize(file *os.File) error
 	// ReadHeader should return a list of column names.
 	ReadHeader() ([]string, error)
-	// ReadRow should read a single row and return it as a map[string]string where column name is key and column value is value.
-	ReadRow(headers []string) (map[string]string, error)
+	// ReadRecord should read a single record and return it as a map[string]string where column name is key and column value is value.
+	ReadRecord(headers []string) (map[string]string, error)
 }
 
 // Writable is for file types that can be written to.
